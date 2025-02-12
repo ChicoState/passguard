@@ -1,0 +1,48 @@
+# Frontend Setup Instructions (Flutter)
+
+## Step 1: Install Flutter
+Download and install Flutter from:
+https://flutter.dev/docs/get-started/install
+
+After installation, check if Flutter is installed correctly:
+flutter --version
+
+---
+
+## Step 2: Configure Flutter Environment
+Run the following command to ensure Flutter is properly set up:
+flutter doctor
+
+Fix any issues displayed in the output before proceeding.
+
+---
+
+## Step 3: Install Project Dependencies
+Navigate to the frontend directory:
+cd frontend
+
+Run the following command to install all required Flutter packages:
+flutter pub get
+
+---
+
+## Step 4: Run the Flutter App
+To start the app on an emulator or connected device, run:
+flutter run
+
+For debugging mode, use:
+flutter run --debug
+
+For release mode (optimized build), use:
+flutter build apk  # For Android
+flutter build ios  # For iOS
+
+---
+
+# Notes:
+- Ensure you have an emulator (Android Studio) or a physical device connected.
+- If any dependencies are missing, run:
+  flutter pub add <package_name>
+- If you face issues, try:
+  flutter clean && flutter pub get
+
