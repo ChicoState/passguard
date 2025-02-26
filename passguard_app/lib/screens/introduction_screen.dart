@@ -75,7 +75,7 @@ class IntroductionScreen extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const SizedBox(height: 290),
+                              const SizedBox(height: 257),
                               const Text(
                                 '#1 Secure Password Manager\n',
                                 style: TextStyle(
@@ -84,7 +84,7 @@ class IntroductionScreen extends StatelessWidget {
                                   color: Colors.white,
                                 ),
                               ),
-                              const SizedBox(height: 20),
+                            //  const SizedBox(height: 1), //initial 20 size ---> changed size - overflow issue fixed 
                               ElevatedButton(
                                 onPressed: () {
                                   Navigator.push(
