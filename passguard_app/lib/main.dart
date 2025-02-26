@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-//import 'package:firebase_core/firebase_core.dart';
-//import 'firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'screens/introduction_screen.dart';
 
-void main(){
-  WidgetsFlutterBinding.ensureInitialized();
-  //await Firebase.initializeApp(
-//    options: DefaultFirebaseOptions.currentPlatform,
+Future<void> main() async {
+  
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
+  );
   runApp(const MyApp());
 }
 
@@ -24,4 +26,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 
