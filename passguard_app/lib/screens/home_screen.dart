@@ -22,6 +22,7 @@ class HomeScreen extends StatelessWidget {
 */
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:passguard_app/screens/passwordcheck_screen.dart';
 import 'package:passguard_app/services/upload_retrieve.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -269,10 +270,42 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddAccountDialog,
-        child: const Icon(Icons.add),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Positions FABs at both edges
+        children: [
+          // Password Check Button (Bottom Left)
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0, bottom: 0.0), 
+            child: FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PasswordCheckScreen()),
+                );
+              },
+              heroTag: 'password_check_fab',
+              tooltip: 'Check Password Leak', // Unique tag to prevent conflicts
+              child: const Icon(Icons.security),
+            ),
+          ),
+
+          // Spacer to push add button to the right
+          const Spacer(),
+
+          // Add Account Button (Bottom Right)
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0, bottom: 0.0),
+            child: FloatingActionButton(
+              onPressed: _showAddAccountDialog,
+              heroTag: 'add_account_fab', // Unique tag to prevent conflicts
+              tooltip: 'Add Account',
+              child: const Icon(Icons.add),
+            ),
+          ),
+        ],
       ),
+
     );
   }
 }
