@@ -1,26 +1,5 @@
-/*
 import 'package:flutter/material.dart';
-
-class HomeScreen extends StatelessWidget {
-  final String userId;
-
-  const HomeScreen({
-    Key? key,
-    required this.userId,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Home Screen')),
-      body: Center(
-        child: Text('Welcome! Your userId is $userId'),
-      ),
-    );
-  }
-}
-*/
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:passguard_app/screens/passwordcheck_screen.dart';
 import 'package:passguard_app/services/upload_retrieve.dart';
@@ -349,6 +328,7 @@ class _AccountCardState extends State<AccountCard> {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Show Password
                 IconButton(
                   icon: Icon(
                       _showPassword ? Icons.visibility : Icons.visibility_off),
@@ -358,6 +338,20 @@ class _AccountCardState extends State<AccountCard> {
                     });
                   },
                 ),
+                // Copy Password
+                IconButton(
+                  icon: const Icon(Icons.copy),
+                  onPressed: () {
+                    Clipboard.setData(ClipboardData(text: password));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Password copied to clipboard'),
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                  },
+                ),
+                // Edit Password
                 IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: widget.onEdit,
