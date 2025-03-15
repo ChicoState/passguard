@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'forgotpass_screen.dart';
 import 'signup_screen.dart';
-import 'home_screen.dart';
+import 'package:passguard_app/screens/home/home_screen.dart';
+
 
 class LoginScreen extends StatefulWidget {
   @override
