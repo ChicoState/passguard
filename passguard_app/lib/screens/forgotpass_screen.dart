@@ -168,11 +168,11 @@ class _ForgotPassScreenState extends State<ForgotPassScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Back to Login Button
+                  //Back to Login Button
                   Center(
                     child: TextButton(
                       onPressed: () {
-                        // Navigate back to login screen
+                        //navigate back to login screen
                         Navigator.pop(context);
                       },
                       child: const Text(
