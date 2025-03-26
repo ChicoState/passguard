@@ -76,6 +76,96 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showEditAccountDialog(DocumentSnapshot doc) {
-    //
-  }
+     TextEditingController _hostNameController =
+         TextEditingController(text: doc.id);
+     TextEditingController _usernameController =
+         TextEditingController(text: doc['username']);
+     TextEditingController _passwordController =
+         TextEditingController(text: doc['password']);
+ 
+     showDialog(
+       context: context,
+       builder: (context) {
+         bool _obscurePassword = true;
+         return StatefulBuilder(
+           builder: (context, setState) {
+             return AlertDialog(
+               title: const Text('Edit Account'),
+               content: SingleChildScrollView(
+                 child: Column(
+                   children: [
+                     TextField(
+                       controller: _hostNameController,
+                       decoration:
+                           const InputDecoration(labelText: 'Host Name'),
+                       readOnly: true,
+                     ),
+                     TextField(
+                       controller: _usernameController,
+                       decoration: const InputDecoration(
+                           labelText: 'Username (optional)'),
+                     ),
+                     TextField(
+                       controller: _passwordController,
+                       obscureText: _obscurePassword,
+                       decoration: InputDecoration(
+                         labelText: 'Password',
+                         suffixIcon: IconButton(
+                           icon: Icon(_obscurePassword
+                               ? Icons.visibility_off
+                               : Icons.visibility),
+                           onPressed: () {
+                             setState(() {
+                               _obscurePassword = !_obscurePassword;
+                             });
+                           },
+                         ),
+                       ),
+                     ),
+                   ],
+                 ),
+               ),
+               actions: [
+                 TextButton(
+                   onPressed: () {
+                     Navigator.of(context).pop();
+                   },
+                   child: const Text('Cancel'),
+                 ),
+                 // Delete button in red
+                 TextButton(
+                   onPressed: () async {
+                     await FirebaseFirestore.instance
+                         .collection('users')
+                         .doc(widget.userId)
+                         .collection('accounts')
+                         .doc(doc.id)
+                         .delete();
+                     Navigator.of(context).pop();
+                   },
+                   child: const Text(
+                     'Delete',
+                     style: TextStyle(color: Colors.red),
+                   ),
+                 ),
+                 ElevatedButton(
+                   onPressed: () async {
+                     String hostName = _hostNameController.text.trim();
+                     String username = _usernameController.text.trim();
+                     String password = _passwordController.text.trim();
+                     if (hostName.isNotEmpty && password.isNotEmpty) {
+                       // Update via the service function.
+                       await uploadPass(username, password, hostName);
+                       Navigator.of(context).pop();
+                     }
+                   },
+                   child: const Text('Update'),
+                 ),
+               ],
+             );
+           },
+         );
+       },
+     );
+   }
 }
