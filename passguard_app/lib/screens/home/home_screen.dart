@@ -68,8 +68,8 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (context) => AddAccountDialog(
-        onSave: (hostName, username, password) async {
-          await uploadPass(username, password, hostName);
+        onSave: (hostName, username, password, email) async {
+          await uploadPass(username, password, hostName, email);
         },
       ),
     );
@@ -82,6 +82,9 @@ class _HomeScreenState extends State<HomeScreen> {
          TextEditingController(text: doc['username']);
      TextEditingController _passwordController =
          TextEditingController(text: doc['password']);
+     TextEditingController _emailController =
+         TextEditingController(text: doc['email'] ?? '');
+
  
      showDialog(
        context: context,
@@ -105,6 +108,11 @@ class _HomeScreenState extends State<HomeScreen> {
                        decoration: const InputDecoration(
                            labelText: 'Username (optional)'),
                      ),
+                     TextField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(labelText: 'Email (optional)'),
+                     ),
+
                      TextField(
                        controller: _passwordController,
                        obscureText: _obscurePassword,
@@ -153,9 +161,10 @@ class _HomeScreenState extends State<HomeScreen> {
                      String hostName = _hostNameController.text.trim();
                      String username = _usernameController.text.trim();
                      String password = _passwordController.text.trim();
+                     String email = _emailController.text.trim();
                      if (hostName.isNotEmpty && password.isNotEmpty) {
                        // Update via the service function.
-                       await uploadPass(username, password, hostName);
+                       await uploadPass(username, password, hostName, email);
                        Navigator.of(context).pop();
                      }
                    },
