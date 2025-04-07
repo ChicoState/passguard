@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:passguard_app/theme.dart';
 
 class AddAccountDialog extends StatefulWidget {
-  final Function(String hostName, String username, String password) onSave;
+  final Function(String hostName, String username, String password, String email) onSave;
+
 
   const AddAccountDialog({
     Key? key,
@@ -18,6 +19,9 @@ class _AddAccountDialogState extends State<AddAccountDialog> {
   final _hostNameController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+
+
   bool _obscurePassword = true;
   String _errorMessage = '';
 
@@ -37,7 +41,11 @@ class _AddAccountDialogState extends State<AddAccountDialog> {
             const SizedBox(height: 8),
             _buildTextField(_usernameController, 'Username (optional)', false),
             const SizedBox(height: 8),
+            _buildTextField(_emailController, 'Email (optional)', false),
+            const SizedBox(height: 8),
             _buildTextField(_passwordController, 'Password', true),
+           
+
             if (_errorMessage.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
@@ -60,13 +68,15 @@ class _AddAccountDialogState extends State<AddAccountDialog> {
             String hostName = _hostNameController.text.trim();
             String username = _usernameController.text.trim();
             String password = _passwordController.text.trim();
+            String email = _emailController.text.trim(); // 👈_
+
             if (hostName.isEmpty || password.isEmpty) {
               setState(() {
                 _errorMessage = 'Host Name and Password are required.';
               });
               return;
             }
-            widget.onSave(hostName, username, password);
+            widget.onSave(hostName, username, password, email);
             Navigator.pop(context);
           },
           child: const Text('Save'),

@@ -29,6 +29,8 @@ class _AccountCardState extends State<AccountCard> {
     final data = widget.doc.data() as Map<String, dynamic>;
     final String password = data['password'] ?? '';
     final String username = data['username'] ?? '';
+    final String email = data['email'] ?? '';
+
     final bool isCompromised = data['isCompromised'] == true; //optional
     final String hostName = widget.doc.id;
 
@@ -71,12 +73,22 @@ class _AccountCardState extends State<AccountCard> {
               "Password: ${_showPassword ? password : obscuredPassword}",
               style: const TextStyle(color: kTextColor),
             ),
-            subtitle: username.isNotEmpty
-                ? Text(
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (username.isNotEmpty)
+                  Text(
                     "Username: $username",
                     style: const TextStyle(color: Colors.grey),
-                  )
-                : null,
+                  ),
+                if (email.isNotEmpty)
+                  Text(
+                    "Email: $email",
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+              ],
+            ),
+
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
