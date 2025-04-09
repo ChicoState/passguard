@@ -113,7 +113,8 @@ class _HomeScreenState extends State<HomeScreen> {
     TextEditingController _passwordController =
         TextEditingController(text: doc['password']);
     TextEditingController _emailController =
-        TextEditingController(text: doc['email'] ?? '');
+      TextEditingController(text: doc.data().toString().contains('email') ? doc['email'] : '');
+
 
     showDialog(
       context: context,
