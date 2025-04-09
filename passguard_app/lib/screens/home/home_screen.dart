@@ -6,6 +6,7 @@ import 'widgets/stats_card_row.dart';
 import 'widgets/accounts_list.dart';
 import 'widgets/add_account_dialog.dart';
 import 'package:passguard_app/theme.dart';
+import 'widgets/passgen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userId;
@@ -35,15 +36,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 flex: 5,
                 child: Padding(
                   padding: const EdgeInsets.all(kDefaultPadding),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      DashboardHeader(userId: widget.userId),
-                      Padding(
-                        padding: const EdgeInsets.only(top: kDefaultPadding),
-                        child: StatsCardRow(userId: widget.userId),
-                      ),
-                    ],
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        DashboardHeader(userId: widget.userId),
+                        Padding(
+                          padding: const EdgeInsets.only(top: kDefaultPadding),
+                          child: StatsCardRow(userId: widget.userId),
+                        ),
+                        // Password Generator Box
+                        const SizedBox(height: kDefaultPadding),
+                        const PassGen(),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -113,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
     TextEditingController _passwordController =
         TextEditingController(text: doc['password']);
     TextEditingController _emailController =
-        TextEditingController(text: doc['email'] ?? '');
+      TextEditingController(text: doc.data().toString().contains('email') ? doc['email'] : '');
 
     showDialog(
       context: context,
