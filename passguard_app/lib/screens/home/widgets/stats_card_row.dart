@@ -1,4 +1,3 @@
-// lib/screens/home/widgets/stats_card_row.dart
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -30,10 +29,15 @@ class StatsCardRow extends StatelessWidget {
             .length;
         final safeAccounts = totalAccounts - compromisedAccounts;
 
+        //clculate the percentage of compromised accounts
+        final double compromisedPercent = (totalAccounts == 0)
+            ? 0
+            : (compromisedAccounts / totalAccounts) * 100;
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            //"cards" row
+            //cards row
             Row(
               children: [
                 Expanded(
@@ -55,7 +59,7 @@ class StatsCardRow extends StatelessWidget {
             ),
             const SizedBox(height: kDefaultPadding),
 
-            //chart
+            //Chart container
             Container(
               padding: const EdgeInsets.all(kDefaultPadding),
               decoration: BoxDecoration(
@@ -78,26 +82,40 @@ class StatsCardRow extends StatelessWidget {
                     )
                   : SizedBox(
                       height: 200,
-                      child: PieChart(
-                        PieChartData(
-                          sectionsSpace: 0,
-                          centerSpaceRadius: 50,
-                          startDegreeOffset: -90,
-                          sections: [
-                            PieChartSectionData(
-                              color: Colors.redAccent,
-                              value: compromisedAccounts.toDouble(),
-                              showTitle: false,
-                              radius: 25,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          PieChart(
+                            PieChartData(
+                              sectionsSpace: 0,
+                              centerSpaceRadius: 50,
+                              startDegreeOffset: -90,
+                              sections: [
+                                PieChartSectionData(
+                                  color: Colors.redAccent,
+                                  value: compromisedAccounts.toDouble(),
+                                  showTitle: false,
+                                  radius: 25,
+                                ),
+                                PieChartSectionData(
+                                  color: kPrimaryColor,
+                                  value: safeAccounts.toDouble(),
+                                  showTitle: false,
+                                  radius: 25,
+                                ),
+                              ],
                             ),
-                            PieChartSectionData(
-                              color: kPrimaryColor,
-                              value: safeAccounts.toDouble(),
-                              showTitle: false,
-                              radius: 25,
+                          ),
+                          //percentage text in the center
+                          Text(
+                            '${compromisedPercent.toStringAsFixed(0)}%',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: kTextColor,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
             ),

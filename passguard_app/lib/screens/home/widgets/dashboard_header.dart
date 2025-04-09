@@ -40,13 +40,7 @@ class DashboardHeader extends StatelessWidget {
                 ),
           ),
           const SizedBox(height: 8),
-          Text(
-            "Your userId is $userId",
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 14,
-            ),
-          ),
+          
         ],
       ),
     );

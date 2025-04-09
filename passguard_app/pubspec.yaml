@@ -38,5 +38,6 @@ flutter:
     - assets/loginBg.jpg
     - assets/redX.png
     - assets/check.png
+    - assets/bgDashPass.png
 
 
