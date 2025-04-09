@@ -420,15 +420,7 @@ packages:
       sha256: "868d88a33d8a87b18ffc05f9f030ba328ffefba92d6c127917a2ba740f9cfe4a"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.0"
-  word_generator:
-    dependency: "direct main"
-    description:
-      name: word_generator
-      sha256: "937dd6d124024fe474835b415bd56ecfda0f32fe8eba60a1be6251f3a154dbf9"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.6"
+    version: "1.1.1"
 sdks:
   dart: ">=3.7.0 <4.0.0"
   flutter: ">=3.27.0"
