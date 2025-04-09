@@ -42,7 +42,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: const EdgeInsets.only(top: kDefaultPadding),
                         child: StatsCardRow(userId: widget.userId),
                       ),
-
                       const SizedBox(height: kDefaultPadding),
                       const PassGen(),
                     ],
@@ -67,22 +66,31 @@ class _HomeScreenState extends State<HomeScreen> {
                             .snapshots(),
                         onEdit: (doc) => _showEditAccountDialog(doc),
                       ),
-                    ),
-                    // Only the "Add Account" button here
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: FloatingActionButton.extended(
-                        backgroundColor: kPrimaryColor,
-                        icon: const Icon(Icons.add),
-                        label: const Text('Add Account'),
-                        onPressed: _showAddAccountDialog,
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: FloatingActionButton.extended(
+                          backgroundColor: const Color.fromARGB(255, 37, 99, 214),
+                          icon: const Icon(Icons.add, color: Colors.white),
+                          label: const Text(
+                              'Add Account',
+                              style: TextStyle(color: Colors.white), 
+                          ), 
+                          hoverColor: Color(0xFF4DB8FF),
+                          // colors: [kPrimaryColor, Color(0xFF4DB8FF)],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+
+                          heroTag: 'addAccountButton',
+                          onPressed: _showAddAccountDialog,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
