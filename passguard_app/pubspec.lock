@@ -421,6 +421,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  word_generator:
+    dependency: "direct main"
+    description:
+      name: word_generator
+      sha256: "937dd6d124024fe474835b415bd56ecfda0f32fe8eba60a1be6251f3a154dbf9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.6"
 sdks:
   dart: ">=3.7.0 <4.0.0"
   flutter: ">=3.27.0"
