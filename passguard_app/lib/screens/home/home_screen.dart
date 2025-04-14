@@ -18,6 +18,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // Searching Query variable, default ('') displays all accounts
+  String _searchQuery = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,25 +37,31 @@ class _HomeScreenState extends State<HomeScreen> {
               //left side (header + stats)
               Expanded(
                 flex: 5,
-                child: Padding(
-                  padding: const EdgeInsets.all(kDefaultPadding),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        DashboardHeader(userId: widget.userId),
-                        Padding(
-                          padding: const EdgeInsets.only(top: kDefaultPadding),
-                          child: StatsCardRow(userId: widget.userId),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              DashboardHeader(userId: widget.userId),
+                              Padding(
+                                padding: const EdgeInsets.only(top: kDefaultPadding),
+                                child: StatsCardRow(userId: widget.userId),
+                              ),
+                              const SizedBox(height: kDefaultPadding),
+                              const PassGen(),
+                            ],
+                          ),
                         ),
-                        // Password Generator Box
-                        const SizedBox(height: kDefaultPadding),
-                        const PassGen(),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
+
               //right side (accounts + add button)
               Expanded(
                 flex: 3,
@@ -60,6 +69,29 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
                   child: Column(
                     children: [
+                      //Search Filtering:
+                      Padding(
+                        padding: const EdgeInsets.only(top: 30.0, bottom: 30.0),
+                        child: TextField(
+                          onChanged: (value) {
+                            setState(() {
+                              _searchQuery = value.toLowerCase();
+                            });
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'Search accounts...',
+                            prefixIcon: Icon(Icons.search),
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      //List of Accounts:
                       Expanded(
                         child: AccountsList(
                           accountsStream: FirebaseFirestore.instance
@@ -68,6 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               .collection('accounts')
                               .snapshots(),
                           onEdit: (doc) => _showEditAccountDialog(doc),
+                          searchQuery: _searchQuery,
                         ),
                       ),
                       Align(

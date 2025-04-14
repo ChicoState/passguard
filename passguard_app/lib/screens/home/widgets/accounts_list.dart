@@ -7,11 +7,13 @@ import 'account_card.dart';
 class AccountsList extends StatelessWidget {
   final Stream<QuerySnapshot> accountsStream;
   final Function(DocumentSnapshot doc) onEdit;
+  final String searchQuery;
 
   const AccountsList({
     Key? key,
     required this.accountsStream,
     required this.onEdit,
+    required this.searchQuery,
   }) : super(key: key);
 
   @override
@@ -30,14 +32,22 @@ class AccountsList extends StatelessWidget {
             ),
           );
         }
+        
+        //filtering:
+        final docs = snapshot.data!.docs.where((doc) {
+          final host = doc.id.toLowerCase(); // hostName
+          return host.contains(searchQuery); // match against search query
+        }).toList();
+
         return ListView(
-          children: snapshot.data!.docs.map((doc) {
+          children: docs.map((doc) {
             return AccountCard(
               doc: doc,
               onEdit: () => onEdit(doc),
             );
           }).toList(),
         );
+
       },
     );
   }
