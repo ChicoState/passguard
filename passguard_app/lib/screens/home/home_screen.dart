@@ -10,9 +10,10 @@ import 'widgets/passgen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userId;
+  final String accPassword;
 
-  const HomeScreen({Key? key, required this.userId}) : super(key: key);
-
+  const HomeScreen({Key? key, required this.userId, required this.accPassword}) : super(key: key);
+  
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -68,6 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               .collection('accounts')
                               .snapshots(),
                           onEdit: (doc) => _showEditAccountDialog(doc),
+                          accPass: widget.accPassword,
                         ),
                       ),
                       Align(
@@ -105,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (context) => AddAccountDialog(
         onSave: (hostName, username, password, email) async {
-          await uploadPass(username, password, hostName, email);
+          uploadPass(username, password, hostName, widget.accPassword, email);
         },
       ),
     );
@@ -197,7 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     String password = _passwordController.text.trim();
                     String email = _emailController.text.trim();
                     if (hostName.isNotEmpty && password.isNotEmpty) {
-                      await uploadPass(username, password, hostName, email);
+                      uploadPass(username, password, hostName, email);
                       Navigator.of(context).pop();
                     }
                   },

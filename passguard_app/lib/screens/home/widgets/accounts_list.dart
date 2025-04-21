@@ -7,11 +7,13 @@ import 'account_card.dart';
 class AccountsList extends StatelessWidget {
   final Stream<QuerySnapshot> accountsStream;
   final Function(DocumentSnapshot doc) onEdit;
+  final String accPass;
 
   const AccountsList({
     Key? key,
     required this.accountsStream,
     required this.onEdit,
+    required this.accPass,
   }) : super(key: key);
 
   @override
@@ -35,6 +37,7 @@ class AccountsList extends StatelessWidget {
             return AccountCard(
               doc: doc,
               onEdit: () => onEdit(doc),
+              accPass: accPass,
             );
           }).toList(),
         );

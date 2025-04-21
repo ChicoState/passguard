@@ -4,16 +4,19 @@ import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:passguard_app/theme.dart';
 import 'package:passguard_app/screens/passwordchecker.dart';
+import 'package:passguard_app/services/upload_retrieve.dart';
 
 
 class AccountCard extends StatefulWidget {
   final DocumentSnapshot doc;
   final VoidCallback onEdit;
+  final String accPass;
 
   const AccountCard({
     Key? key,
     required this.doc,
     required this.onEdit,
+    required this.accPass,
   }) : super(key: key);
 
   @override
@@ -22,19 +25,17 @@ class AccountCard extends StatefulWidget {
 
 class _AccountCardState extends State<AccountCard> {
   bool _showPassword = false;
-  bool _isCheckingLeak = false;
+  bool _isCheckingLeak = false; 
 
   @override
   Widget build(BuildContext context) {
     final data = widget.doc.data() as Map<String, dynamic>;
-    final String password = data['password'] ?? '';
+    final String password = decrypt(widget.accPass, data['password']  ?? '');
     final String username = data['username'] ?? '';
     final String email = data['email'] ?? '';
 
     final bool isCompromised = data['isCompromised'] == true; //optional
     final String hostName = widget.doc.id;
-
-    final obscuredPassword = '•' * password.length;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -69,8 +70,9 @@ class _AccountCardState extends State<AccountCard> {
         ),
         children: [
           ListTile(
-            title: Text(
-              "Password: ${_showPassword ? password : obscuredPassword}",
+            title: 
+            Text(
+              "Password: ${_showPassword ? password : '•' * password.length}",
               style: const TextStyle(color: kTextColor),
             ),
             subtitle: Column(

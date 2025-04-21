@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.push(      //HomeScreen on successful login
         context,
         MaterialPageRoute(
-          builder: (context) => HomeScreen(userId: userCredential.user!.uid),
+          builder: (context) => HomeScreen(userId: userCredential.user!.uid, accPassword: password),
         ),
       );
     } catch (e) {
