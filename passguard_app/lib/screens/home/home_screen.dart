@@ -7,7 +7,7 @@ import 'widgets/accounts_list.dart';
 import 'widgets/add_account_dialog.dart';
 import 'package:passguard_app/theme.dart';
 import 'widgets/passgen.dart';
-
+import 'package:passguard_app/screens/passwordchecker.dart';
 class HomeScreen extends StatefulWidget {
   final String userId;
 
@@ -90,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-
+                      Expanded(child: OutlinedButton(onPressed: _checkAll, child: Icon(Icons.shield)),),
                       //List of Accounts:
                       Expanded(
                         child: AccountsList(
@@ -132,7 +132,45 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+  void _checkAll() async {
+  final accountsSnapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(widget.userId)
+      .collection('accounts')
+      .get();
 
+  List<String> compromisedHosts = [];
+
+  for (var doc in accountsSnapshot.docs) {
+    final data = doc.data();
+    final password = data['password'];
+    final host = doc.id;
+
+    // Only check and update if it's not already marked as compromised
+    if (password != null && !(data['isCompromised'] == true)) {
+      bool isCompromised = await PasswordChecker.checkPasswordLeak(password);
+      if (isCompromised) {
+        await doc.reference.update({'isCompromised': true});
+        compromisedHosts.add(host);
+      }
+    }
+  }
+
+  if (!mounted) return;
+
+  if (compromisedHosts.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('No compromised passwords found.')),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+            '${compromisedHosts.length} compromised password(s) found. Cards updated.'),
+      ),
+    );
+  }
+}
   void _showAddAccountDialog() {
     showDialog(
       context: context,
