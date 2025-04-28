@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:passguard_app/theme.dart';
 import 'package:passguard_app/screens/passwordchecker.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 
 class AccountCard extends StatefulWidget {
@@ -112,6 +114,35 @@ class _AccountCardState extends State<AccountCard> {
                     setState(() => _showPassword = !_showPassword);
                   },
                 ),
+                //Go to hostname URL button
+                IconButton(
+                  icon: const Icon(Icons.open_in_browser, color: kPrimaryColor),
+                  tooltip: 'Open Website',
+                  onPressed: () async {
+                    String formattedHost = hostName.trim();
+
+                    // Add 'https://' if missing
+                    if (!formattedHost.startsWith('http')) {
+                      formattedHost = 'https://' + formattedHost;
+                    }
+
+                    // Add 'www.' if missing after protocol
+                    Uri uri = Uri.parse(formattedHost);
+                    if (uri.host.split('.').length == 2) {
+                      formattedHost = uri.scheme + '://www.' + uri.host + (uri.hasPort ? ':${uri.port}' : '') + uri.path;
+                      uri = Uri.parse(formattedHost);
+                    }
+
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Could not open website')),
+                      );
+                    }
+                  },
+
+                ),
                 //copy
                 IconButton(
                   icon: Icon(Icons.copy, color: kPrimaryColor),
@@ -125,6 +156,7 @@ class _AccountCardState extends State<AccountCard> {
                     );
                   },
                 ),
+                
                 //edit
                 IconButton(
                   icon: Icon(Icons.edit, color: kPrimaryColor),
