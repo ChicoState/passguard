@@ -69,28 +69,50 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
                   child: Column(
                     children: [
-                      //Search Filtering:
                       Padding(
-                        padding: const EdgeInsets.only(top: 30.0, bottom: 30.0),
-                        child: TextField(
-                          onChanged: (value) {
-                            setState(() {
-                              _searchQuery = value.toLowerCase();
-                            });
-                          },
-                          decoration: InputDecoration(
-                            hintText: 'Search accounts...',
-                            prefixIcon: Icon(Icons.search),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
+                      padding: const EdgeInsets.only(top: 30.0, bottom: 30.0),
+                      child: Row(
+                      children: [
+                        SizedBox(
+                          height: 45,
+                          width: 80,
+                          child:
+                          ElevatedButton(
+                            onPressed: _checkAll,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:const Color.fromARGB(255, 37, 99, 214),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Icon(Icons.shield, color:Colors.white, size: 25,), // You can change this to any icon or text
+                          ),
+                        ), 
+                        //Search Filtering:
+                        Expanded(flex: 1, child: const SizedBox(width:0)), //space between the searchbar and button
+                          Expanded(
+                            flex:20,
+                          child: TextField(
+                            onChanged: (value) {
+                              setState(() {
+                                _searchQuery = value.toLowerCase();
+                              });
+                            },
+                            decoration: InputDecoration(
+                              hintText: 'Search accounts...',
+                              prefixIcon: Icon(Icons.search),
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      Expanded(child: OutlinedButton(onPressed: _checkAll, child: Icon(Icons.shield)),),
+                      ],
+                    ),
+                  ),
                       //List of Accounts:
                       Expanded(
                         child: AccountsList(
