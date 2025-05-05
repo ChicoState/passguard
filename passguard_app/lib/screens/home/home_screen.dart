@@ -69,28 +69,53 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
                   child: Column(
                     children: [
-                      //Search Filtering:
                       Padding(
                         padding: const EdgeInsets.only(top: 30.0, bottom: 30.0),
-                        child: TextField(
-                          onChanged: (value) {
-                            setState(() {
-                              _searchQuery = value.toLowerCase();
-                            });
-                          },
-                          decoration: InputDecoration(
-                            hintText: 'Search accounts...',
-                            prefixIcon: Icon(Icons.search),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
+                        child: Row(
+                        children: [
+                          //the _checkAll button
+                          SizedBox(
+                            height: 45,
+                            width: 80,
+                            child: ElevatedButton(
+                              onPressed: _checkAll,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:const Color.fromARGB(255, 37, 99, 214),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: const Icon(Icons.shield, color:Colors.white, size: 25,), 
                             ),
-                          ),
+                            
+                          ), 
+
+                          //Search Filtering:
+                          Expanded(flex: 1, child: const SizedBox(width:0)), //space between the searchbar and button
+                            Expanded(
+                              flex:20,
+                            child: TextField(
+                              onChanged: (value) {
+                                setState(() {
+                                  _searchQuery = value.toLowerCase();
+                                });
+                              },
+                                decoration: InputDecoration(
+                                  hintText: 'Search accounts...',
+                                  prefixIcon: Icon(Icons.search),
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Expanded(child: OutlinedButton(onPressed: _checkAll, child: Icon(Icons.shield)),),
+                  
                       //List of Accounts:
                       Expanded(
                         child: AccountsList(
@@ -103,25 +128,27 @@ class _HomeScreenState extends State<HomeScreen> {
                           searchQuery: _searchQuery,
                         ),
                       ),
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: FloatingActionButton.extended(
-                          backgroundColor: const Color.fromARGB(255, 37, 99, 214),
-                          icon: const Icon(Icons.add, color: Colors.white),
-                          label: const Text(
-                              'Add Account',
-                              style: TextStyle(color: Colors.white), 
-                          ), 
-                          hoverColor: Color(0xFF4DB8FF),
-                          // colors: [kPrimaryColor, Color(0xFF4DB8FF)],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-
-                          heroTag: 'addAccountButton',
-                          onPressed: _showAddAccountDialog,
+                      //space between add and list
+                      SizedBox(height: 10),
+                      //Add button
+                      FloatingActionButton.extended(
+                        backgroundColor: const Color.fromARGB(255, 37, 99, 214),
+                        icon: const Icon(Icons.add, color: Colors.white),
+                        label: const Text(
+                            'Add Account',
+                            style: TextStyle(color: Colors.white), 
+                        ), 
+                        hoverColor: Color(0xFF4DB8FF),
+                        // colors: [kPrimaryColor, Color(0xFF4DB8FF)],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
+                        heroTag: 'addAccountButton',
+                        onPressed: _showAddAccountDialog,
                       ),
+
+                      //spacer from bottom of box
+                      SizedBox(height: 15), //size 30 to match top of page
                     ],
                   ),
                 ),
