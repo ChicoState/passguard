@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:encrypt/encrypt.dart' as enc;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../services/upload_retrieve.dart';
@@ -11,8 +14,10 @@ import 'widgets/passgen.dart';
 class HomeScreen extends StatefulWidget {
   final String userId;
   final String accPassword;
+  final enc.Key encryptionKey;
+  final Uint8List iv;
 
-  const HomeScreen({Key? key, required this.userId, required this.accPassword}) : super(key: key);
+  const HomeScreen({Key? key, required this.userId, required this.accPassword, required this.encryptionKey, required this.iv}) : super(key: key);
   
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -70,6 +75,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               .snapshots(),
                           onEdit: (doc) => _showEditAccountDialog(doc),
                           accPass: widget.accPassword,
+                          encryptionKey: widget.encryptionKey,
+                          iv: widget.iv
                         ),
                       ),
                       Align(
@@ -107,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (context) => AddAccountDialog(
         onSave: (hostName, username, password, email) async {
-          uploadPass(username, password, hostName, widget.accPassword, email);
+          uploadPass(username, password, hostName, widget.accPassword, widget.encryptionKey, widget.iv, email);
         },
       ),
     );
@@ -119,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
     TextEditingController _usernameController =
         TextEditingController(text: doc['username']);
     TextEditingController _passwordController =
-        TextEditingController(text: doc['password']);
+        TextEditingController(text: decrypt(widget.accPassword, doc['password']  ?? '', widget.encryptionKey, widget.iv));
     TextEditingController _emailController =
       TextEditingController(text: doc.data().toString().contains('email') ? doc['email'] : '');
 
@@ -199,7 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     String password = _passwordController.text.trim();
                     String email = _emailController.text.trim();
                     if (hostName.isNotEmpty && password.isNotEmpty) {
-                      uploadPass(username, password, hostName, email);
+                      uploadPass(username, password, hostName,widget.accPassword, widget.encryptionKey, widget.iv, email);
                       Navigator.of(context).pop();
                     }
                   },

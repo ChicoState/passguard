@@ -5,18 +5,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:passguard_app/theme.dart';
 import 'package:passguard_app/screens/passwordchecker.dart';
 import 'package:passguard_app/services/upload_retrieve.dart';
-
+import 'package:encrypt/encrypt.dart' as enc;
 
 class AccountCard extends StatefulWidget {
   final DocumentSnapshot doc;
   final VoidCallback onEdit;
   final String accPass;
+  final enc.Key encryptionKey;
+  final Uint8List iv;
 
   const AccountCard({
     Key? key,
     required this.doc,
     required this.onEdit,
     required this.accPass,
+    required this.encryptionKey,
+    required this.iv
   }) : super(key: key);
 
   @override
@@ -30,7 +34,7 @@ class _AccountCardState extends State<AccountCard> {
   @override
   Widget build(BuildContext context) {
     final data = widget.doc.data() as Map<String, dynamic>;
-    final String password = decrypt(widget.accPass, data['password']  ?? '');
+    final String password = decrypt(widget.accPass, data['password']  ?? '', widget.encryptionKey, widget.iv);
     final String username = data['username'] ?? '';
     final String email = data['email'] ?? '';
 

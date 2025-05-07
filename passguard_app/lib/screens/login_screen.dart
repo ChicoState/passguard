@@ -1,6 +1,11 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:encrypt/encrypt.dart' as enc;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import '../services/upload_retrieve.dart';
 import 'forgotpass_screen.dart';
 import 'signup_screen.dart';
 import 'package:passguard_app/screens/home/home_screen.dart';
@@ -30,14 +35,48 @@ class _LoginScreenState extends State<LoginScreen> {
     //sign-in --- we'll have to implement it on sign in screen 
     try {
       UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      Navigator.push(      //HomeScreen on successful login
+
+      final userdoc = FirebaseFirestore.instance.collection("users").doc(userCredential.user!.uid);
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await userdoc.get();
+
+      Uint8List salt;
+      Uint8List iv;
+
+      if (snapshot.exists) {
+        final data = snapshot.data();
+        if (data != null && data.containsKey("passdata")) {
+          final decoded = base64Decode(data["passdata"]);
+          salt = Uint8List.fromList(decoded.sublist(0, 16));
+          iv = Uint8List.fromList(decoded.sublist(16, 32));
+        } else {
+          final saltAndIv = generateSaltIV();
+          salt = Uint8List.fromList(saltAndIv.sublist(0, 16));
+          iv = Uint8List.fromList(saltAndIv.sublist(16, 32));
+          await userdoc.set({"passdata": base64Encode(saltAndIv)}, SetOptions(merge: true));
+        }
+      } else {
+        // Document doesn't exist — initialize it with salt and iv
+        final saltAndIv = generateSaltIV();
+        salt = Uint8List.fromList(saltAndIv.sublist(0, 16));
+        iv = Uint8List.fromList(saltAndIv.sublist(16, 32));
+        await userdoc.set({"passdata": base64Encode(saltAndIv)});
+      }
+
+      final encKey = deriveKey(password, salt);
+
+      Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => HomeScreen(userId: userCredential.user!.uid, accPassword: password),
+          builder: (context) => HomeScreen(
+            userId: userCredential.user!.uid,
+            accPassword: password,
+            encryptionKey: encKey,
+            iv: iv,
+          ),
         ),
       );
     } catch (e) {

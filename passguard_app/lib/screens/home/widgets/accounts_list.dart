@@ -1,19 +1,27 @@
 // lib/screens/home/widgets/accounts_list.dart
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:passguard_app/theme.dart';
 import 'account_card.dart';
+import 'package:encrypt/encrypt.dart' as enc;
 
 class AccountsList extends StatelessWidget {
   final Stream<QuerySnapshot> accountsStream;
   final Function(DocumentSnapshot doc) onEdit;
   final String accPass;
+  final enc.Key encryptionKey;
+  final Uint8List iv;
 
   const AccountsList({
     Key? key,
     required this.accountsStream,
     required this.onEdit,
     required this.accPass,
+    required this.encryptionKey,
+    required this.iv
+    
   }) : super(key: key);
 
   @override
@@ -38,6 +46,8 @@ class AccountsList extends StatelessWidget {
               doc: doc,
               onEdit: () => onEdit(doc),
               accPass: accPass,
+              encryptionKey: encryptionKey,
+              iv: iv
             );
           }).toList(),
         );
