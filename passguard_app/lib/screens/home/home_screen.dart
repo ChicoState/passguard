@@ -10,7 +10,7 @@ import 'widgets/accounts_list.dart';
 import 'widgets/add_account_dialog.dart';
 import 'package:passguard_app/theme.dart';
 import 'widgets/passgen.dart';
-
+import 'package:passguard_app/screens/passwordchecker.dart';
 class HomeScreen extends StatefulWidget {
   final String userId;
   final String accPassword;
@@ -24,6 +24,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // Searching Query variable, default ('') displays all accounts
+  String _searchQuery = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,25 +43,31 @@ class _HomeScreenState extends State<HomeScreen> {
               //left side (header + stats)
               Expanded(
                 flex: 5,
-                child: Padding(
-                  padding: const EdgeInsets.all(kDefaultPadding),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        DashboardHeader(userId: widget.userId),
-                        Padding(
-                          padding: const EdgeInsets.only(top: kDefaultPadding),
-                          child: StatsCardRow(userId: widget.userId),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              DashboardHeader(userId: widget.userId),
+                              Padding(
+                                padding: const EdgeInsets.only(top: kDefaultPadding),
+                                child: StatsCardRow(userId: widget.userId),
+                              ),
+                              const SizedBox(height: kDefaultPadding),
+                              const PassGen(),
+                            ],
+                          ),
                         ),
-                        // Password Generator Box
-                        const SizedBox(height: kDefaultPadding),
-                        const PassGen(),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
+
               //right side (accounts + add button)
               Expanded(
                 flex: 3,
@@ -66,6 +75,54 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
                   child: Column(
                     children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 30.0, bottom: 30.0),
+                        child: Row(
+                        children: [
+                          //the _checkAll button
+                          SizedBox(
+                            height: 45,
+                            width: 80,
+                            child: ElevatedButton(
+                              onPressed: _checkAll,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:const Color.fromARGB(255, 37, 99, 214),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: const Icon(Icons.shield, color:Colors.white, size: 25,), 
+                            ),
+                            
+                          ), 
+
+                          //Search Filtering:
+                          Expanded(flex: 1, child: const SizedBox(width:0)), //space between the searchbar and button
+                            Expanded(
+                              flex:20,
+                            child: TextField(
+                              onChanged: (value) {
+                                setState(() {
+                                  _searchQuery = value.toLowerCase();
+                                });
+                              },
+                                decoration: InputDecoration(
+                                  hintText: 'Search accounts...',
+                                  prefixIcon: Icon(Icons.search),
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  
+                      //List of Accounts:
                       Expanded(
                         child: AccountsList(
                           accountsStream: FirebaseFirestore.instance
@@ -76,28 +133,32 @@ class _HomeScreenState extends State<HomeScreen> {
                           onEdit: (doc) => _showEditAccountDialog(doc),
                           accPass: widget.accPassword,
                           encryptionKey: widget.encryptionKey,
-                          iv: widget.iv
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: FloatingActionButton.extended(
-                          backgroundColor: const Color.fromARGB(255, 37, 99, 214),
-                          icon: const Icon(Icons.add, color: Colors.white),
-                          label: const Text(
-                              'Add Account',
-                              style: TextStyle(color: Colors.white), 
-                          ), 
-                          hoverColor: Color(0xFF4DB8FF),
-                          // colors: [kPrimaryColor, Color(0xFF4DB8FF)],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                          iv: widget.iv,
 
-                          heroTag: 'addAccountButton',
-                          onPressed: _showAddAccountDialog,
+                          searchQuery: _searchQuery,
                         ),
                       ),
+                      //space between add and list
+                      SizedBox(height: 10),
+                      //Add button
+                      FloatingActionButton.extended(
+                        backgroundColor: const Color.fromARGB(255, 37, 99, 214),
+                        icon: const Icon(Icons.add, color: Colors.white),
+                        label: const Text(
+                            'Add Account',
+                            style: TextStyle(color: Colors.white), 
+                        ), 
+                        hoverColor: Color(0xFF4DB8FF),
+                        // colors: [kPrimaryColor, Color(0xFF4DB8FF)],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        heroTag: 'addAccountButton',
+                        onPressed: _showAddAccountDialog,
+                      ),
+
+                      //spacer from bottom of box
+                      SizedBox(height: 15), //size 30 to match top of page
                     ],
                   ),
                 ),
@@ -108,7 +169,45 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+  void _checkAll() async {
+  final accountsSnapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(widget.userId)
+      .collection('accounts')
+      .get();
 
+  List<String> compromisedHosts = [];
+
+  for (var doc in accountsSnapshot.docs) {
+    final data = doc.data();
+    final password = data['password'];
+    final host = doc.id;
+
+    // Only check and update if it's not already marked as compromised
+    if (password != null && !(data['isCompromised'] == true)) {
+      bool isCompromised = await PasswordChecker.checkPasswordLeak(password);
+      if (isCompromised) {
+        await doc.reference.update({'isCompromised': true});
+        compromisedHosts.add(host);
+      }
+    }
+  }
+
+  if (!mounted) return;
+
+  if (compromisedHosts.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('No compromised passwords found.')),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+            '${compromisedHosts.length} compromised password(s) found. Cards updated.'),
+      ),
+    );
+  }
+}
   void _showAddAccountDialog() {
     showDialog(
       context: context,

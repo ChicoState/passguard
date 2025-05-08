@@ -13,6 +13,7 @@ class AccountsList extends StatelessWidget {
   final String accPass;
   final enc.Key encryptionKey;
   final Uint8List iv;
+  final String searchQuery;
 
   const AccountsList({
     Key? key,
@@ -20,8 +21,8 @@ class AccountsList extends StatelessWidget {
     required this.onEdit,
     required this.accPass,
     required this.encryptionKey,
-    required this.iv
-    
+    required this.iv,
+    required this.searchQuery,
   }) : super(key: key);
 
   @override
@@ -40,8 +41,15 @@ class AccountsList extends StatelessWidget {
             ),
           );
         }
+        
+        //filtering:
+        final docs = snapshot.data!.docs.where((doc) {
+          final host = doc.id.toLowerCase(); // hostName
+          return host.contains(searchQuery); // match against search query
+        }).toList();
+
         return ListView(
-          children: snapshot.data!.docs.map((doc) {
+          children: docs.map((doc) {
             return AccountCard(
               doc: doc,
               onEdit: () => onEdit(doc),
@@ -51,6 +59,7 @@ class AccountsList extends StatelessWidget {
             );
           }).toList(),
         );
+
       },
     );
   }

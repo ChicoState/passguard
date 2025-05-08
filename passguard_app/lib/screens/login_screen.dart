@@ -162,6 +162,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     child: TextField(
                       controller: _passwordController,
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) => _login(),
                       obscureText: true,
                       decoration: const InputDecoration(
                         hintText: 'Password',

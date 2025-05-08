@@ -1,14 +1,37 @@
 // lib/screens/home/widgets/dashboard_header.dart
 import 'package:flutter/material.dart';
 import 'package:passguard_app/theme.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class DashboardHeader extends StatelessWidget {
+class DashboardHeader extends StatefulWidget {
   final String userId;
 
   const DashboardHeader({
     Key? key,
     required this.userId,
   }) : super(key: key);
+
+  @override
+  State<DashboardHeader> createState() => _DashboardHeaderState();
+}
+
+class _DashboardHeaderState extends State<DashboardHeader> {
+  String userName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final doc = await FirebaseFirestore.instance.collection('users').doc(widget.userId).get();
+    if (doc.exists) {
+      setState(() {
+        userName = doc['name'] ?? '';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,17 +56,23 @@ class DashboardHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Dashboard",
+            'Dashboard',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
           ),
           const SizedBox(height: 8),
-          
+          Text(
+            userName.isNotEmpty ? 'Hello, $userName' : '',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Colors.white70,
+                ),
+          ),
         ],
       ),
     );
   }
 }
+
 
