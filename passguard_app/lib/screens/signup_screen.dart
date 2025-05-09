@@ -47,12 +47,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
           });
         } else {
           setState(() {
-            _errorMessage = 'Error occurred. Please try again.';
+            _errorMessage = e.code;
           });
         }
       } else {
         setState(() {
-          _errorMessage = 'Error occurred. Please try again.';
+          _errorMessage = 'Error occurred2. Please try again.';
         });
       }
     }
