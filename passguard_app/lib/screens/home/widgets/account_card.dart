@@ -120,6 +120,7 @@ class _AccountCardState extends State<AccountCard> {
                   onPressed: () {
                     setState(() => _showPassword = !_showPassword);
                   },
+                  tooltip: 'Password Visibility',
                 ),
                 //Go to hostname URL button
                 IconButton(
@@ -160,14 +161,16 @@ class _AccountCardState extends State<AccountCard> {
                         content: Text('Password copied to clipboard'),
                         duration: Duration(seconds: 1),
                       ),
-                    );
+                    ); 
                   },
+                  tooltip: 'Copy Password',
                 ),
                 
                 //edit
                 IconButton(
                   icon: Icon(Icons.edit, color: kPrimaryColor),
                   onPressed: widget.onEdit,
+                  tooltip: 'Edit Account',
                 ),
               ],
             ),
